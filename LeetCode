@@ -1,1 +1,199 @@
+LEETCODE
+Problem 9:
+Determine whether an integer is a palindrome. An integer is a palindrome when it reads the same backward as forward.
 
+var isPalindrome = function(x) {
+    if (x < 0) {
+        return false;
+    };
+    
+	// calculate how many decimal places x has
+    let decimalPlace = 0;
+    while (Math.floor(x / 10 ** decimalPlace) >= 1) {
+        decimalPlace++;
+    };
+    
+	// initialize an array to store numbers at every decimal place of x
+	// i.e. given x as 1221
+	// we are going to generate an array [1, 2, 2, 1] from x
+    let decimalArr = [];
+    
+    for (let i = decimalPlace - 1; i >= 0; i--) {
+        const currentDecimal = Math.floor(x / 10 ** i);
+        decimalArr.push(currentDecimal);
+		
+		// remember to substract the decimal place that is just pushed to decimalArr
+        x -= currentDecimal * 10 ** i;
+    };
+    
+	// run a regular two-pointer palindrome check for decimalArr and you are done
+	// initialize two pointers
+    let i = 0, j = decimalArr.length - 1;
+    
+    while (i < j) {
+        if (decimalArr[i] !== decimalArr[j]) {
+            return false;
+        }
+        
+        i++;
+        j--;
+    };
+    
+    return true;
+}
+
+// with converting the number to a string
+var isPalindrome = function(x) {
+    if (x < 0) {
+        return false;
+    };
+    
+    const temp = x.toString();
+    
+    let i = 0, j = temp.length - 1;
+    while (i < j) {
+        if (temp[i] === temp[j]) {
+            i++;
+            j--;
+        }
+        else {
+            return false;
+        }
+    };
+    
+    return true;
+};
+
+
+Problem 19:
+Given a linked list, remove the n-th node from the end of list and return its head.
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution 
+{
+    public ListNode removeNthFromEnd(ListNode head, int n)
+    {
+        ListNode dummy = new ListNode(-99);
+        dummy.next = head;
+        ListNode a = dummy;
+        ListNode b = dummy;
+        
+        while(n > 0) {
+            if(a == null)
+                return null;
+            a = a.next;
+            n--;
+        }
+        
+        while(a != null && a.next != null) {
+            a=a.next;
+            b=b.next;
+        }
+
+        if(b.next != null)
+            b.next = b.next.next;
+        else
+            b.next = null;
+        return dummy.next;
+    }
+}
+
+Problem 29:
+Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
+Return the quotient after dividing dividend by divisor.
+The integer division should truncate toward zero, which means losing its fractional part.
+class Solution {
+    public int divide(int dividend, int divisor) {
+        
+		// handling special/edge cases
+        if (divisor == 0)
+            return Integer.MAX_VALUE;
+        if (divisor == -1 && dividend == Integer.MIN_VALUE)
+            return Integer.MAX_VALUE;
+        
+		// decide sign of resultant
+        boolean isPositive = true;
+        if ((divisor < 0) ^ (dividend < 0))
+            isPositive = false;
+        
+		// using long to handle cases like, dividend = INT_MIN, divisor = 1
+        long divid = Math.abs((long)dividend);
+        long divis = Math.abs((long)divisor);
+        
+		// ans to store final result
+        int ans = 0;
+        while (divid >= divis) {
+            
+			// calculate number of left shifts
+            int shifts = 0;
+            while (divid >= (divis << shifts))
+                shifts ++;
+            
+			// update answer
+            ans += (1 << (shifts - 1));
+			
+			// dividend minus the largest shifted divisor
+            divid -= (divis << (shifts - 1));
+        }
+		
+		// return answer alongwith sign
+        if (isPositive)
+            return ans;
+        return -ans;
+    }
+}
+
+
+Problem 21:
+Merge two sorted linked lists and return it as a new sorted list. The new list should be made by splicing together the nodes of the first two lists.
+
+const mergeTwoLists = (l1, l2) => {
+    if(!l1 || !l2) return l1 || l2
+    if(l1.val < l2.val){
+        l1.next = mergeTwoLists(l1.next, l2)
+        return l1
+    }
+    else {
+        l2.next = mergeTwoLists(l1, l2.next)
+        return l2
+    }
+}
+
+Problem 11:
+Given n non-negative integers a1, a2, ..., an , where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
+
+Note: You may not slant the container and n is at least 2.
+
+
+var maxArea = function(height) {
+    let result = -1
+    for(let i=0; i<height.length; i++){
+        let one = 0
+        let two = 0
+        for(let j=0; j<i; j++){
+            if(height[j]>=height[i]) {
+                one=height[i]*(i - j)
+                break;
+            }
+        }
+        for(let k=height.length-1; k>i; k--){
+            if(height[k]>=height[i]) {
+                two=height[i]*(k-i)
+                break;
+            }
+        }
+        if(one>two && one>result){
+            result=one
+        }else if(two>result){
+            result=two
+        }
+    }
+    return result
+    
+};
