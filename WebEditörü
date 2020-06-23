@@ -1,0 +1,519 @@
+
+PROJECT EULER
+Problem 1:
+If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+Find the sum of all the multiples of 3 or 5 below 1000.
+
+function multiplesOf3and5(number) {
+	// establish a global total and set initial value to 0
+	let total = 0
+	// loop through all values from 0 to given number	
+  for(let i = 0; i <= number; i++) {
+		// Get remainder of i and 3
+		let remainderFor3 = i % 3;
+		// Get remainder of i and 5
+		let remainderFor5 = i % 5;		// check if remainder for 3 or 5
+		if(remainderFor3 == 0 || remainderFor5 == 0) {
+			// If true, that means i is a multiple of 3
+			// add it to the total
+			total = total + i
+		}
+	}
+	// return our total number
+	return total
+}
+
+
+
+
+
+
+Problem 41
+We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly once. For example, 2143 is a 4-digit pandigital and is also prime.
+
+What is the largest n-digit pandigital prime that exists?
+
+var factors = {};
+factors.getFactors = function (number){
+    var factors = [];
+    
+    var possibleFactor = 1;
+    var sqrt = Math.sqrt(number);
+    while(possibleFactor <= sqrt){
+        if(number % possibleFactor == 0){
+            factors[factors.length] = possibleFactor;
+            
+            var otherPossibleFactor = number / possibleFactor;
+            if(otherPossibleFactor > possibleFactor){
+                factors[factors.length] = otherPossibleFactor;
+            } 
+        }
+        possibleFactor++;
+    }
+    
+    return factors;
+};//End of factors.getFactors function
+var prime = {};
+prime.isPrime = function(num){
+    num = (num > 0) ? num : num * -1;
+    return factors.getFactors(num).length == 2;
+};//Checks if the provided number is prime
+
+var isPandigital = function(number){
+    var numString = number + '';
+    var numLength = numString.length;
+    for(var i = 1; i <= numLength; i++){
+        if(numString.indexOf(i+'')==-1){
+            return false;
+        }
+    }
+
+    return true;
+};
+
+console.log(isPandigital(2143));
+
+//because 1+2+3+4+5+6+7+8 is a multiple of 3 and 1+2+3+4+5+6+7+8+9 is a multiple of 3, 8 and 9 digit pandigital primes are not possible!
+
+var pandigitalNumbers = 0;
+for(var i = 7654321; i > 0; i--){
+    if(isPandigital(i)){
+        if(prime.isPrime(i)){
+            console.log(i);
+            break;
+        }
+    }
+}
+    
+
+
+
+
+
+
+Problem 21:
+Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n).
+If d(a) = b and d(b) = a, where a ≠ b, then a and b are an amicable pair and each of a and b are called amicable numbers.
+For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; therefore d(220) = 284. The proper divisors of 284 are 1, 2, 4, 71 and 142; so d(284) = 220.
+Evaluate the sum of all the amicable numbers under 10000.
+
+var total = 10000;
+	var halfTotal = total / 2;
+	var amicableNumbers = [];
+	var sum = 0;
+	
+
+	for (var i = 0; i < halfTotal; i++){
+	  if (total % i === 0){
+	    amicableNumbers.push(i);
+	    sum += i;
+	  }
+	}
+	
+
+	console.log("Sum of all amicable numbers under " + total + " is " + sum);
+	
+	console.log(amicableNumbers);
+
+
+
+
+
+Problem 31:
+In the United Kingdom the currency is made up of pound (£) and pence (p). There are eight coins in general circulation:1p, 2p, 5p, 10p, 20p, 50p, £1 (100p), and £2 (200p).                                                          It is possible to make £2 in the following way:
+1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p
+How many different ways can £2 be made using any number of coins?
+//Set up the coin values
+var coinValues = [1, 2, 5, 10, 20, 50, 100, 200];
+
+//Set up the object to memoize the operation results
+var comboCounts = [];
+for(var i = 0; i < coinValues.length; i++){
+    comboCounts[i] = [];
+}
+
+var findDifferentCoinCombos = function(amount, maxIndex) {
+    var combos = 0;
+
+    //Consider the max index if no index was passed in
+    maxIndex = (maxIndex || maxIndex == 0) ? maxIndex : coinValues.length - 1;
+    
+    //Handle 1 combo cases manually
+    if(maxIndex == 0 || amount == 0){
+        return 1;
+    }
+    //If we've already figured out the answer, return that
+    if(comboCounts[maxIndex][amount]){
+        return comboCounts[maxIndex][amount];
+    }
+    
+    //Sum the possible combinations of lesser coins for each possible amount of highest valued coins
+    var coinValue = coinValues[maxIndex];
+    var coinAmount = 0;
+    while(amount >= coinAmount){
+        combos += findDifferentCoinCombos(amount - coinAmount, maxIndex - 1);
+        coinAmount += coinValue;
+    }
+    
+    //Memoize it
+    comboCounts[maxIndex][amount] = combos;
+
+    //Return the answer
+    return combos;
+};
+
+console.log(findDifferentCoinCombos(200));
+
+Problem 61
+Triangle, square, pentagonal, hexagonal, heptagonal, and octagonal numbers are all figurate (polygonal) numbers and are generated by the following formulae:
+
+Triangle	 	P3,n=n(n+1)/2	 	1, 3, 6, 10, 15, ...
+Square	 	P4,n=n2	 	1, 4, 9, 16, 25, ...
+Pentagonal	 	P5,n=n(3n−1)/2	 	1, 5, 12, 22, 35, ...
+Hexagonal	 	P6,n=n(2n−1)	 	1, 6, 15, 28, 45, ...
+Heptagonal	 	P7,n=n(5n−3)/2	 	1, 7, 18, 34, 55, ...
+Octagonal	 	P8,n=n(3n−2)	 	1, 8, 21, 40, 65, ...
+The ordered set of three 4-digit numbers: 8128, 2882, 8281, has three interesting properties.
+
+The set is cyclic, in that the last two digits of each number is the first two digits of the next number (including the last number with the first).
+Each polygonal type: triangle (P3,127=8128), square (P4,91=8281), and pentagonal (P5,44=2882), is represented by a different number in the set.
+This is the only set of 4-digit numbers with this property.
+Find the sum of the only ordered set of six cyclic 4-digit numbers for which each polygonal type: triangle, square, pentagonal, hexagonal, heptagonal, and octagonal, is represented by a different number in the set.
+
+
+function q(m) {
+  return function (x) {
+    var s = (8 * m - 16) * x + (m * m - 8 * m + 16);
+    return (Math.sqrt(s) + (m - 4)) % (2 * m - 4) == 0;
+  }
+}
+
+q3 = q(3);
+q4 = q(4);
+q5 = q(5);
+q6 = q(6);
+q7 = q(7);
+q8 = q(8);
+
+var f3 = 0;
+var f4 = 0;
+var f5 = 0;
+var f6 = 0;
+var f7 = 0;
+var f8 = 0;
+
+var v = [];
+
+function r(k) {
+  if (k == 6) {
+    if (v[0] == v[6]) {
+      ans = (v[0] + v[1] + v[2] + v[3] + v[4] + v[5]) * 101;
+    }
+  } else {
+    var a = v[k] * 100;
+    for (var i = v[0]; i < 100; i++) {
+      var b = a + i;
+      if (f3 == 0 && q3(b)) {
+        f3 = 1; v[k + 1] = i; r(k + 1); f3 = 0;
+      }
+      if (f4 == 0 && q4(b)) {
+        f4 = 1; v[k + 1] = i; r(k + 1); f4 = 0;
+      }
+      if (f5 == 0 && q5(b)) {
+        f5 = 1; v[k + 1] = i; r(k + 1); f5 = 0;
+      }
+      if (f6 == 0 && q6(b)) {
+        f6 = 1; v[k + 1] = i; r(k + 1); f6 = 0;
+      }
+      if (f7 == 0 && q7(b)) {
+        f7 = 1; v[k + 1] = i; r(k + 1); f7 = 0;
+      }
+      if (f8 == 0 && q8(b)) {
+        f8 = 1; v[k + 1] = i; r(k + 1); f8 = 0;
+      }
+    }
+  }
+}
+
+ans = 0;
+for (var i = 10; i < 100; i++) {
+  v[0] = i;
+  r(0);
+}
+document.write('ANS: ', ans);
+
+
+
+
+
+
+
+	console.log(amicableNumbers);
+
+
+
+
+
+
+
+
+
+
+
+
+
+Problem 31:
+In the United Kingdom the currency is made up of pound (£) and pence (p). There are eight coins in general circulation:1p, 2p, 5p, 10p, 20p, 50p, £1 (100p), and £2 (200p).                                                          It is possible to make £2 in the following way:
+1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p
+How many different ways can £2 be made using any number of coins?
+//Set up the coin values
+var coinValues = [1, 2, 5, 10, 20, 50, 100, 200];
+
+//Set up the object to memoize the operation results
+var comboCounts = [];
+for(var i = 0; i < coinValues.length; i++){
+    comboCounts[i] = [];
+}
+
+var findDifferentCoinCombos = function(amount, maxIndex) {
+    var combos = 0;
+
+    //Consider the max index if no index was passed in
+    maxIndex = (maxIndex || maxIndex == 0) ? maxIndex : coinValues.length - 1;
+    
+    //Handle 1 combo cases manually
+    if(maxIndex == 0 || amount == 0){
+        return 1;
+    }
+    //If we've already figured out the answer, return that
+    if(comboCounts[maxIndex][amount]){
+        return comboCounts[maxIndex][amount];
+    }
+    
+    //Sum the possible combinations of lesser coins for each possible amount of highest valued coins
+    var coinValue = coinValues[maxIndex];
+    var coinAmount = 0;
+    while(amount >= coinAmount){
+        combos += findDifferentCoinCombos(amount - coinAmount, maxIndex - 1);
+        coinAmount += coinValue;
+    }
+    
+    //Memoize it
+    comboCounts[maxIndex][amount] = combos;
+
+    //Return the answer
+    return combos;
+};
+
+console.log(findDifferentCoinCombos(200));
+
+
+
+
+
+
+
+
+
+
+
+
+LEETCODE
+Problem 9:
+Determine whether an integer is a palindrome. An integer is a palindrome when it reads the same backward as forward.
+
+var isPalindrome = function(x) {
+    if (x < 0) {
+        return false;
+    };
+    
+	// calculate how many decimal places x has
+    let decimalPlace = 0;
+    while (Math.floor(x / 10 ** decimalPlace) >= 1) {
+        decimalPlace++;
+    };
+    
+	// initialize an array to store numbers at every decimal place of x
+	// i.e. given x as 1221
+	// we are going to generate an array [1, 2, 2, 1] from x
+    let decimalArr = [];
+    
+    for (let i = decimalPlace - 1; i >= 0; i--) {
+        const currentDecimal = Math.floor(x / 10 ** i);
+        decimalArr.push(currentDecimal);
+		
+		// remember to substract the decimal place that is just pushed to decimalArr
+        x -= currentDecimal * 10 ** i;
+    };
+    
+	// run a regular two-pointer palindrome check for decimalArr and you are done
+	// initialize two pointers
+    let i = 0, j = decimalArr.length - 1;
+    
+    while (i < j) {
+        if (decimalArr[i] !== decimalArr[j]) {
+            return false;
+        }
+        
+        i++;
+        j--;
+    };
+    
+    return true;
+}
+
+// with converting the number to a string
+var isPalindrome = function(x) {
+    if (x < 0) {
+        return false;
+    };
+    
+    const temp = x.toString();
+    
+    let i = 0, j = temp.length - 1;
+    while (i < j) {
+        if (temp[i] === temp[j]) {
+            i++;
+            j--;
+        }
+        else {
+            return false;
+        }
+    };
+    
+    return true;
+};
+
+
+Problem 19:
+Given a linked list, remove the n-th node from the end of list and return its head.
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution 
+{
+    public ListNode removeNthFromEnd(ListNode head, int n)
+    {
+        ListNode dummy = new ListNode(-99);
+        dummy.next = head;
+        ListNode a = dummy;
+        ListNode b = dummy;
+        
+        while(n > 0) {
+            if(a == null)
+                return null;
+            a = a.next;
+            n--;
+        }
+        
+        while(a != null && a.next != null) {
+            a=a.next;
+            b=b.next;
+        }
+
+        if(b.next != null)
+            b.next = b.next.next;
+        else
+            b.next = null;
+        return dummy.next;
+    }
+}
+
+Problem 29:
+Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
+Return the quotient after dividing dividend by divisor.
+The integer division should truncate toward zero, which means losing its fractional part.
+class Solution {
+    public int divide(int dividend, int divisor) {
+        
+		// handling special/edge cases
+        if (divisor == 0)
+            return Integer.MAX_VALUE;
+        if (divisor == -1 && dividend == Integer.MIN_VALUE)
+            return Integer.MAX_VALUE;
+        
+		// decide sign of resultant
+        boolean isPositive = true;
+        if ((divisor < 0) ^ (dividend < 0))
+            isPositive = false;
+        
+		// using long to handle cases like, dividend = INT_MIN, divisor = 1
+        long divid = Math.abs((long)dividend);
+        long divis = Math.abs((long)divisor);
+        
+		// ans to store final result
+        int ans = 0;
+        while (divid >= divis) {
+            
+			// calculate number of left shifts
+            int shifts = 0;
+            while (divid >= (divis << shifts))
+                shifts ++;
+            
+			// update answer
+            ans += (1 << (shifts - 1));
+			
+			// dividend minus the largest shifted divisor
+            divid -= (divis << (shifts - 1));
+        }
+		
+		// return answer alongwith sign
+        if (isPositive)
+            return ans;
+        return -ans;
+    }
+}
+
+
+Problem 21:
+Merge two sorted linked lists and return it as a new sorted list. The new list should be made by splicing together the nodes of the first two lists.
+
+const mergeTwoLists = (l1, l2) => {
+    if(!l1 || !l2) return l1 || l2
+    if(l1.val < l2.val){
+        l1.next = mergeTwoLists(l1.next, l2)
+        return l1
+    }
+    else {
+        l2.next = mergeTwoLists(l1, l2.next)
+        return l2
+    }
+}
+
+Problem 11:
+Given n non-negative integers a1, a2, ..., an , where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
+
+Note: You may not slant the container and n is at least 2.
+
+
+var maxArea = function(height) {
+    let result = -1
+    for(let i=0; i<height.length; i++){
+        let one = 0
+        let two = 0
+        for(let j=0; j<i; j++){
+            if(height[j]>=height[i]) {
+                one=height[i]*(i - j)
+                break;
+            }
+        }
+        for(let k=height.length-1; k>i; k--){
+            if(height[k]>=height[i]) {
+                two=height[i]*(k-i)
+                break;
+            }
+        }
+        if(one>two && one>result){
+            result=one
+        }else if(two>result){
+            result=two
+        }
+    }
+    return result
+    
+};
